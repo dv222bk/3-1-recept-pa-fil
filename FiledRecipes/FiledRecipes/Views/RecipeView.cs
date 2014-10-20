@@ -14,8 +14,10 @@ namespace FiledRecipes.Views
     {
         public void Show(IRecipe recipe)
         {
+            Console.Clear();
             base.Header = recipe.Name;
             base.ShowHeaderPanel();
+            Console.WriteLine();
             Console.WriteLine(Properties.Strings.Ingredients);
             Console.WriteLine("".CenterAlignString(new String(' ', Properties.Strings.Ingredients.Length)).Replace(" ", "-"));
             foreach (Ingredient ingredient in recipe.Ingredients)
@@ -32,13 +34,13 @@ namespace FiledRecipes.Views
                 Console.WriteLine("<{0}>", i + 1);
                 Console.WriteLine(recipe.Instructions.ElementAt(i));
             }
-            base.ContinueOnKeyPressed();
         }
         public void Show(IEnumerable<IRecipe> recipes)
         {
             foreach (IRecipe recipe in recipes)
             {
                 Show(recipe);
+                base.ContinueOnKeyPressed();
             }
         }
     }
