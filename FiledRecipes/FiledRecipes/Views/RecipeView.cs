@@ -8,10 +8,14 @@ using System.Linq;
 namespace FiledRecipes.Views
 {
     /// <summary>
-    /// 
+    /// Contains methods for displaying recipes.
     /// </summary>
     public class RecipeView : ViewBase, IRecipeView
     {
+        /// <summary>
+        /// Displays a single recipe.
+        /// </summary>
+        /// <param name="recipe">Recipe to display.</param>
         public void Show(IRecipe recipe)
         {
             Console.Clear();
@@ -35,6 +39,11 @@ namespace FiledRecipes.Views
                 Console.WriteLine(recipe.Instructions.ElementAt(i));
             }
         }
+
+        /// <summary>
+        /// Displays multiple recipes, one at a time.
+        /// </summary>
+        /// <param name="recipes">Recipes to display.</param>
         public void Show(IEnumerable<IRecipe> recipes)
         {
             foreach (IRecipe recipe in recipes)

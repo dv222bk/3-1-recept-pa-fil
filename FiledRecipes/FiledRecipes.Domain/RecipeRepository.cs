@@ -127,6 +127,10 @@ namespace FiledRecipes.Domain
                 handler(this, e);
             }
         }
+
+        /// <summary>
+        /// Saves all recipes in a file
+        /// </summary>
         public void Save()
         {
             List<IRecipe> recipes = _recipes;
@@ -167,6 +171,10 @@ namespace FiledRecipes.Domain
             IsModified = false;
             OnRecipesChanged(EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Loads recipes from a file
+        /// </summary>
         public void Load()
         {
             List<IRecipe> recipes = new List<IRecipe>();
