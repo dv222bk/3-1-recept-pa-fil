@@ -127,5 +127,65 @@ namespace FiledRecipes.Domain
                 handler(this, e);
             }
         }
+        protected void Load()
+        {
+            List<Recipe> recipes = new List<Recipe>();
+            try
+            {
+                using (StreamReader recipesFile = new StreamReader(_path))
+                {
+                    string fileRow;
+                    RecipeReadStatus recipeReadStatus = RecipeReadStatus.Indefinite;
+                    while ((fileRow = recipesFile.ReadLine().Trim()) != null)
+                    {
+                        while (true)
+                        {
+                            if (fileRow == "")
+                            {
+                                break;
+                            }
+                            if (fileRow == SectionRecipe)
+                            {
+                                recipeReadStatus = RecipeReadStatus.New;
+                                break;
+                            } 
+                            else if (fileRow == SectionIngredients)
+                            {
+                                recipeReadStatus = RecipeReadStatus.Ingredient;
+                                break;
+                            }
+                            else if (fileRow == SectionInstructions)
+                            {
+                                recipeReadStatus = RecipeReadStatus.Instruction;
+                                break;
+                            }
+                            if (recipeReadStatus == RecipeReadStatus.New)
+                            {
+                                recipes.Add(new Recipe(fileRow));
+                            }
+                            else if (recipeReadStatus == RecipeReadStatus.Ingredient)
+                            {
+                                string[] ingredientParts = fileRow.Split(';');
+                                if (ingredientParts.Length != 3)
+                                {
+                                    throw new FileFormatException();
+                                }
+                                Ingredient ingredient = new Ingredient 
+                                {
+                                    Amount = ingredientParts[0];
+                                    
+                                }
+                                recipes.Last().Add(new Ingredient(ingredientParts[0], ingredientParts[1], ingredientParts[2]));
+
+                            }
+                            else if (recipeReadStatus == RecipeReadStatus.Instruction)
+                            {
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
