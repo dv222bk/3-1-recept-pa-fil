@@ -152,7 +152,6 @@ namespace FiledRecipes.Domain
                         }
                     }
                 }
-                IsModified = false;
             }
             catch (Exception ex)
             {
@@ -162,9 +161,11 @@ namespace FiledRecipes.Domain
                 {
                     Console.WriteLine("ERROR: Invalid filepath");
                     Console.WriteLine(ex.Message);
-                    throw;
                 }
+                throw ex;
             }
+            IsModified = false;
+            OnRecipesChanged(EventArgs.Empty);
         }
         public void Load()
         {
@@ -175,8 +176,9 @@ namespace FiledRecipes.Domain
                 {
                     string fileRow;
                     RecipeReadStatus recipeReadStatus = RecipeReadStatus.Indefinite;
-                    while ((fileRow = recipesFile.ReadLine().Trim()) != null)
+                    while ((fileRow = recipesFile.ReadLine()) != null)
                     {
+                        fileRow = fileRow.Trim();
                         while (true)
                         {
                             //If the string is empty
@@ -212,7 +214,7 @@ namespace FiledRecipes.Domain
                             else if (recipeReadStatus == RecipeReadStatus.Ingredient)
                             {
                                 string[] ingredientParts = fileRow.Split(';');
-                                if (ingredientParts.Length != 3 || ingredientParts[2] == null || ingredientParts[2] == "")
+                                if (ingredientParts.Length != 3 || String.IsNullOrEmpty(ingredientParts[2]))
                                 {
                                     throw new FileFormatException();
                                 }
@@ -235,10 +237,6 @@ namespace FiledRecipes.Domain
                             throw new FileFormatException();
                         }
                     }
-                    recipes.Sort();
-                    _recipes = recipes;
-                    IsModified = false;
-                    OnRecipesChanged(EventArgs.Empty);
                 }
             }
             catch (Exception ex)
@@ -249,9 +247,13 @@ namespace FiledRecipes.Domain
                 {
                     Console.WriteLine("ERROR: Invalid filepath");
                     Console.WriteLine(ex.Message);
-                    throw;
                 }
+                throw ex;
             }
+            recipes.Sort();
+            _recipes = recipes;
+            IsModified = false;
+            OnRecipesChanged(EventArgs.Empty);
         }
     }
 }
