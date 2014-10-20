@@ -129,13 +129,13 @@ namespace FiledRecipes.Domain
         }
         protected void Load()
         {
-            List<Recipe> recipes = new List<Recipe>();
-            try
+            List<IRecipe> recipes = new List<IRecipe>();
+            using (StreamReader recipesFile = new StreamReader(_path))
             {
-                using (StreamReader recipesFile = new StreamReader(_path))
+                string fileRow;
+                RecipeReadStatus recipeReadStatus = RecipeReadStatus.Indefinite;
+                try
                 {
-                    string fileRow;
-                    RecipeReadStatus recipeReadStatus = RecipeReadStatus.Indefinite;
                     while ((fileRow = recipesFile.ReadLine().Trim()) != null)
                     {
                         while (true)
@@ -177,7 +177,7 @@ namespace FiledRecipes.Domain
                                 {
                                     throw new FileFormatException();
                                 }
-                                Ingredient ingredient = new Ingredient 
+                                Ingredient ingredient = new Ingredient
                                 {
                                     Amount = ingredientParts[0],
                                     Measure = ingredientParts[1],
@@ -197,6 +197,20 @@ namespace FiledRecipes.Domain
                         }
                     }
                     recipes.Sort();
+                    _recipes = recipes;
+                    IsModified = false;
+                    OnRecipesChanged(EventArgs.Empty);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is ArgumentException || ex is ArgumentNullException || 
+                        ex is FileNotFoundException || ex is DirectoryNotFoundException ||
+                        ex is IOException)
+                    {
+                        Console.WriteLine("Invalid filepath");
+                        Console.WriteLine(ex.Message);
+                        throw;
+                    }
                 }
             }
         }
