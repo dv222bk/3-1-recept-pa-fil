@@ -36,7 +36,10 @@ namespace FiledRecipes.Views
         }
         public void Show(IEnumerable<IRecipe> recipes)
         {
-
+            foreach (IRecipe recipe in recipes)
+            {
+                Show(recipe);
+            }
         }
     }
 }
