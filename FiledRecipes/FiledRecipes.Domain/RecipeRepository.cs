@@ -172,15 +172,15 @@ namespace FiledRecipes.Domain
                                 }
                                 Ingredient ingredient = new Ingredient 
                                 {
-                                    Amount = ingredientParts[0];
-                                    
-                                }
-                                recipes.Last().Add(new Ingredient(ingredientParts[0], ingredientParts[1], ingredientParts[2]));
-
+                                    Amount = ingredientParts[0],
+                                    Measure = ingredientParts[1],
+                                    Name = ingredientParts[2],
+                                };
+                                recipes.Last().Add(ingredient);
                             }
                             else if (recipeReadStatus == RecipeReadStatus.Instruction)
                             {
-
+                                recipes.Last().Add(fileRow);
                             }
                         }
                     }
