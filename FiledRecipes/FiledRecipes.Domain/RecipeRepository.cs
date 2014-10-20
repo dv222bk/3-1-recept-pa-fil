@@ -127,12 +127,46 @@ namespace FiledRecipes.Domain
                 handler(this, e);
             }
         }
-        protected void Save()
+        public void Save()
         {
             List<IRecipe> recipes = _recipes;
-
+            try
+            {
+                using (StreamWriter recipesFile = new StreamWriter(_path))
+                {
+                    for (int i = 0; i < recipes.Count; i++)
+                    {
+                        recipesFile.WriteLine(SectionRecipe);
+                        recipesFile.WriteLine(recipes[i].Name);
+                        recipesFile.WriteLine(SectionIngredients);
+                        foreach (Ingredient ingredient in recipes[i].Ingredients)
+                        {
+                            recipesFile.WriteLine(ingredient.Amount + ";");
+                            recipesFile.WriteLine(ingredient.Measure + ";");
+                            recipesFile.WriteLine(ingredient.Name);
+                        }
+                        recipesFile.WriteLine(SectionInstructions);
+                        foreach (String instruction in recipes[i].Instructions)
+                        {
+                            recipesFile.WriteLine(instruction);
+                        }
+                    }
+                }
+                IsModified = false;
+            }
+            catch (Exception ex)
+            {
+                if (ex is ArgumentException || ex is ArgumentNullException ||
+                    ex is FileNotFoundException || ex is DirectoryNotFoundException ||
+                    ex is IOException)
+                {
+                    Console.WriteLine("ERROR: Invalid filepath");
+                    Console.WriteLine(ex.Message);
+                    throw;
+                }
+            }
         }
-        protected void Load()
+        public void Load()
         {
             List<IRecipe> recipes = new List<IRecipe>();
             try
@@ -178,7 +212,7 @@ namespace FiledRecipes.Domain
                             else if (recipeReadStatus == RecipeReadStatus.Ingredient)
                             {
                                 string[] ingredientParts = fileRow.Split(';');
-                                if (ingredientParts.Length != 3)
+                                if (ingredientParts.Length != 3 || ingredientParts[2] == null || ingredientParts[2] == "")
                                 {
                                     throw new FileFormatException();
                                 }
