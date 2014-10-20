@@ -127,15 +127,20 @@ namespace FiledRecipes.Domain
                 handler(this, e);
             }
         }
+        protected void Save()
+        {
+            List<IRecipe> recipes = _recipes;
+
+        }
         protected void Load()
         {
             List<IRecipe> recipes = new List<IRecipe>();
-            using (StreamReader recipesFile = new StreamReader(_path))
+            try
             {
-                string fileRow;
-                RecipeReadStatus recipeReadStatus = RecipeReadStatus.Indefinite;
-                try
+                using (StreamReader recipesFile = new StreamReader(_path))
                 {
+                    string fileRow;
+                    RecipeReadStatus recipeReadStatus = RecipeReadStatus.Indefinite;
                     while ((fileRow = recipesFile.ReadLine().Trim()) != null)
                     {
                         while (true)
@@ -201,16 +206,16 @@ namespace FiledRecipes.Domain
                     IsModified = false;
                     OnRecipesChanged(EventArgs.Empty);
                 }
-                catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                if (ex is ArgumentException || ex is ArgumentNullException ||
+                    ex is FileNotFoundException || ex is DirectoryNotFoundException ||
+                    ex is IOException)
                 {
-                    if (ex is ArgumentException || ex is ArgumentNullException || 
-                        ex is FileNotFoundException || ex is DirectoryNotFoundException ||
-                        ex is IOException)
-                    {
-                        Console.WriteLine("Invalid filepath");
-                        Console.WriteLine(ex.Message);
-                        throw;
-                    }
+                    Console.WriteLine("ERROR: Invalid filepath");
+                    Console.WriteLine(ex.Message);
+                    throw;
                 }
             }
         }
