@@ -141,8 +141,8 @@ namespace FiledRecipes.Domain
                         recipesFile.WriteLine(SectionIngredients);
                         foreach (Ingredient ingredient in recipes[i].Ingredients)
                         {
-                            recipesFile.WriteLine(ingredient.Amount + ";");
-                            recipesFile.WriteLine(ingredient.Measure + ";");
+                            recipesFile.Write(ingredient.Amount + ";");
+                            recipesFile.Write(ingredient.Measure + ";");
                             recipesFile.WriteLine(ingredient.Name);
                         }
                         recipesFile.WriteLine(SectionInstructions);
