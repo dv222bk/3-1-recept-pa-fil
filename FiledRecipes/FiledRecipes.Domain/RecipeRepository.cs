@@ -140,29 +140,36 @@ namespace FiledRecipes.Domain
                     {
                         while (true)
                         {
+                            //If the string is empty
                             if (fileRow == "")
                             {
                                 break;
                             }
+                            //If the string marks the start of a new recipe
                             if (fileRow == SectionRecipe)
                             {
                                 recipeReadStatus = RecipeReadStatus.New;
                                 break;
-                            } 
+                            }
+                            //If the string marks the start of the ingredient section
                             else if (fileRow == SectionIngredients)
                             {
                                 recipeReadStatus = RecipeReadStatus.Ingredient;
                                 break;
                             }
+                            //If the string marks the start of the instruction section
                             else if (fileRow == SectionInstructions)
                             {
                                 recipeReadStatus = RecipeReadStatus.Instruction;
                                 break;
                             }
+                            //If the string contains the name of the new recipe
                             if (recipeReadStatus == RecipeReadStatus.New)
                             {
                                 recipes.Add(new Recipe(fileRow));
+                                break;
                             }
+                            //If the string contains an ingredient
                             else if (recipeReadStatus == RecipeReadStatus.Ingredient)
                             {
                                 string[] ingredientParts = fileRow.Split(';');
@@ -177,13 +184,19 @@ namespace FiledRecipes.Domain
                                     Name = ingredientParts[2],
                                 };
                                 recipes.Last().Add(ingredient);
+                                break;
                             }
+                            //If the string contains instructions
                             else if (recipeReadStatus == RecipeReadStatus.Instruction)
                             {
                                 recipes.Last().Add(fileRow);
+                                break;
                             }
+                            //If none of the above
+                            throw new FileFormatException();
                         }
                     }
+                    recipes.Sort();
                 }
             }
         }
